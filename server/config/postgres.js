@@ -1,12 +1,22 @@
 const pg = require('pg');
 const config = require('./config');
 const conString = config.db.address;
-const CryptoJS = require("crypto-js");
+const crypto = require('./crypto');
 
 exports.getAll = function(callback) {
   pg.connect(conString, function(err, client, done) {
     const queryStr = "SELECT * FROM persons;";
     client.query(queryStr, function(err, results) {
+      done();
+      callback(err, results);
+    });
+  });
+}
+
+exports.getByUsername = function(username, callback) {
+  pg.connect(conString, function(err, client, done) {
+    var queryStr = `SELECT * FROM persons WHERE username = ($1)`;
+    client.query(queryStr, [username], function(err, results) {
       done();
       callback(err, results);
     });
@@ -40,7 +50,7 @@ exports.init = function(callback) {
           const insertQuery =
           `INSERT INTO persons VALUES
           (DEFAULT, \'admin\', \'admin@mail.fr\', \'Lyon\', \'admin\', \'`
-          + CryptoJS.AES.encrypt(config.db.admin, config.secretKey) +`\', \'ADMIN\');`;
+          + crypto.encrypt(config.db.admin) +`\', \'ADMIN\');`;
           client.query(insertQuery, function(err, results) {
             done();
             console.log(result);
