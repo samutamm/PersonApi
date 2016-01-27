@@ -1,32 +1,38 @@
 const pg = require('pg');
 const config = require('../../config/config');
 const conString = config.db.address;
-const crypto = require('../../config/crypto');
 const queries = require('./persons.queries.json');
 const Person = require('./Person');
 
-exports.init = function(callback) {
+function addToDBIfNotExists(person, callback) {
   pg.connect(conString, function(err, client, done) {
     if(err) return console.error('error fetching client from pool', err);
     client.query(getQuery(queries.createTable), function(err, result) {
-      client.query(getQuery(queries.selectByUsername), ['admin'], function(err, results) {
+      client.query(getQuery(queries.selectByUsername), [person.username], function(err, results) {
         if(results.rows.length > 0) {
-          console.log('Admin déjà exists.');
           done();
-          callback();
+          callback(null, 'Username ' + person.username + ' is reserved.');
         } else {
-          const insertQuery =
-          `INSERT INTO persons VALUES
-          (DEFAULT, \'admin\', \'admin@mail.fr\', \'Lyon\', \'admin\', \'`
-          + crypto.encrypt(config.db.admin) +`\', \'ADMIN\');`;
-          client.query(insertQuery, function(err, results) {
+          client.query(getQuery(queries.addPerson), person.asAList(), function(err, results) {
             done();
-            console.log(result);
-            callback();
+            callback(err, results);
           });
         }
       })
     });
+  });
+}
+
+exports.init = function(callback) {
+  const admin = new Person({
+    name: 'admin', mail: 'admin@mail.fr',
+    address: 'Lyon', username: 'admin',
+    password: config.db.admin, role: 'ADMIN'
+  });
+  addToDBIfNotExists(admin, function(err, result) {
+    console.log(err);
+    console.log(result);
+    callback()
   });
 }
 
@@ -49,17 +55,9 @@ exports.getByUsername = function(username, callback) {
 }
 
 exports.addPerson = function(person, callback) {
-  pg.connect(conString, function(err, client, done) {
-    const query = "INSERT INTO persons VALUES" +
-    " (DEFAULT, $1, $2, $3, $4, $5, $6);";
-    const list = person.asAList();
-    console.log(list);
-    client.query(query, list, function(err, results) {
-      done();
-      callback(err, results);
-    });
+  addToDBIfNotExists(admin, function(err, result) {
+    callback(err, result)
   });
-
 }
 
 function getQuery(list) {
