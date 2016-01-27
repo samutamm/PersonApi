@@ -18,11 +18,12 @@ module.exports = function() {
 
   app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
   });
 
   require('../app/routes/persons.route.js')(app);
+  require('../app/routes/login.route.js')(app);
 
   app.use(express.static('public'));
   return app;
