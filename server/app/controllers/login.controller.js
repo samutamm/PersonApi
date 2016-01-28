@@ -1,4 +1,4 @@
-const db = require('../../config/postgres');
+const db = require('../models/persons.model');
 const crypto = require('../../config/crypto');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
