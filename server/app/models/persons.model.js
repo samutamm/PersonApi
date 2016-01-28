@@ -55,7 +55,7 @@ exports.getByUsername = function(username, callback) {
 }
 
 exports.addPerson = function(person, callback) {
-  addToDBIfNotExists(admin, function(err, result) {
+  addToDBIfNotExists(person, function(err, result) {
     callback(err, result)
   });
 }
