@@ -30,9 +30,13 @@ exports.checkCredentials = function(req, res) {
 }
 
 exports.checkToken = function(req, res) {
-  const b64 = req.headers.authorization.split(' ')[1];
-  const token = new Buffer(b64, 'base64').toString("ascii");
-  jwt.verify(token, config.secretKey, function(err, decoded) {
+  const jwtToken = req.headers.authorization.split(' ')[1];
+  jwt.verify(jwtToken, config.secretKey, function(err, decoded) {
+    if (err) {
+      res.status(401).send(err);
+    } else if (decoded.username === undefined) {
+      res.status(401).send();
+    }
     db.getByUsername(decoded.username, function(err, results) {
       if(results.rows.length > 0) {
         res.status(200).send();

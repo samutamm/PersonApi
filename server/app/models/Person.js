@@ -3,7 +3,6 @@ const crypto = require('../../config/crypto');
 
 module.exports = class Person {
   constructor(body) {
-    debugger;
     this.name = body.name;
     this.email = body.email;
     this.address = body.address;
