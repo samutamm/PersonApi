@@ -6,8 +6,6 @@ const Person = require('./Person');
 
 function addToDBIfNotExists(person, callback) {
   pg.connect(conString, function(err, client, done) {
-    if(err) return console.error('error fetching client from pool', err);
-    client.query(getQuery(queries.createTable), function(err, result) {
       client.query(getQuery(queries.selectByUsername), [person.username], function(err, results) {
         if(results.rows.length > 0) {
           done();
@@ -19,7 +17,6 @@ function addToDBIfNotExists(person, callback) {
           });
         }
       })
-    });
   });
 }
 
@@ -29,10 +26,12 @@ exports.init = function(callback) {
     address: 'Lyon', username: 'admin',
     password: config.db.admin, role: 'ADMIN'
   });
-  addToDBIfNotExists(admin, function(err, result) {
-    console.log(err);
-    console.log(result);
-    callback()
+  pg.connect(conString, function(err, client, done) {
+    client.query(getQuery(queries.createTable), function(err, result) {
+      addToDBIfNotExists(admin, function(err, result) {
+        callback()
+      });
+    });
   });
 }
 
