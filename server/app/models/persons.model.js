@@ -28,6 +28,7 @@ exports.init = function(callback) {
   });
   pg.connect(conString, function(err, client, done) {
     client.query(getQuery(queries.createTable), function(err, result) {
+      done();
       addToDBIfNotExists(admin, function(err, result) {
         callback()
       });

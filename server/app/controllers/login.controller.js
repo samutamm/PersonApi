@@ -30,19 +30,23 @@ exports.checkCredentials = function(req, res) {
 }
 
 exports.checkToken = function(req, res) {
-  const jwtToken = req.headers.authorization.split(' ')[1];
+  const headers = req.headers.authorization.split(' ');
+  const jwtToken = headers[1];
+  const role = headers[2];
   jwt.verify(jwtToken, config.secretKey, function(err, decoded) {
     if (err) {
       res.status(401).send(err);
     } else if (decoded.username === undefined) {
       res.status(401).send();
+    } else {
+      db.getByUsername(decoded.username, function(err, results) {
+        if(results.rows.length > 0 &&
+          (results.rows[0].role === role || role === "ALL")) {
+          res.status(200).send();
+        } else {
+          res.status(401).send()
+        }
+      });
     }
-    db.getByUsername(decoded.username, function(err, results) {
-      if(results.rows.length > 0) {
-        res.status(200).send();
-      } else {
-        res.status(401).send()
-      }
-    });
   });
 }
