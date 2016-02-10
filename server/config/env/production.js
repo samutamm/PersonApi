@@ -1,4 +1,7 @@
 module.exports = {
-  sessionSecret: process.env.SESSION_SECRET,
-  db: process.env.POSTGRES
+  secretKey: process.env.SECRET_KEY,
+  db: {
+    address: process.env.DATABASE_URL,
+    admin: process.env.ADMIN_PASSWORD
+  }
 }
