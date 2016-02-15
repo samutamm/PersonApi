@@ -1,4 +1,8 @@
 module.exports = {
-  sessionSecret: 'salainenTestiSessio',
-  db: 'postgres'
+  sessionSecret: 'salainenSessio',
+  secretKey: 'asdasd',
+  db: {
+    address: 'postgres://postgres:@localhost/persons',
+    admin: 'passu'
+  }
 }
