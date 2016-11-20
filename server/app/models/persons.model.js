@@ -22,8 +22,8 @@ function addToDBIfNotExists(person, callback) {
 
 exports.init = function(callback) {
   const admin = new Person({
-    name: 'admin', mail: 'admin@mail.fr',
-    address: 'Lyon', username: 'admin',
+    name: 'admin', mail: 'admin@mail.fi',
+    address: 'Helsinki', username: 'admin',
     password: config.db.admin, role: 'ADMIN'
   });
   pg.connect(conString, function(err, client, done) {

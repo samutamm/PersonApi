@@ -2,7 +2,7 @@ module.exports = {
   sessionSecret: 'salainenSessio',
   secretKey: 'asdasd',
   db: {
-    address: 'postgres://postgres:@localhost/persons',
+    address: 'postgres://samutamminen:postgres@localhost/persons',
     admin: 'passu'
   }
 }

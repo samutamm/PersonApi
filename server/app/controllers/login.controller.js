@@ -15,8 +15,7 @@ exports.checkCredentials = function(req, res) {
       const user = results.rows[0];
       if (crypto.decrypt(user.password) === credentials[1]) {
         const json = {
-          username: credentials[0],
-          role: user.role
+          username: credentials[0]
         };
         jwt.sign(json, config.secretKey,{ expiresIn: '1h' }, function(token) {
           json.token = token;
@@ -31,8 +30,7 @@ exports.checkCredentials = function(req, res) {
 
 exports.checkToken = function(req, res) {
   const headers = req.headers.authorization.split(' ');
-  const jwtToken = headers[1];
-  const role = headers[2];
+  const jwtToken = headers[0];
   jwt.verify(jwtToken, config.secretKey, function(err, decoded) {
     if (err) {
       res.status(401).send(err);
@@ -40,8 +38,7 @@ exports.checkToken = function(req, res) {
       res.status(401).send();
     } else {
       db.getByUsername(decoded.username, function(err, results) {
-        if(results.rows.length > 0 &&
-          (results.rows[0].role === role || role === "ALL")) {
+        if(results.rows.length > 0) {
           res.status(200).send();
         } else {
           res.status(401).send()
