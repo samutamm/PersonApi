@@ -39,7 +39,9 @@ exports.checkToken = function(req, res) {
     } else {
       db.getByUsername(decoded.username, function(err, results) {
         if(results.rows.length > 0) {
-          res.status(200).send();
+          res.status(200).send(JSON.stringify({
+            username: decoded.username
+          }));
         } else {
           res.status(401).send()
         }
